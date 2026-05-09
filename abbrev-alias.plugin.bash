@@ -18,8 +18,16 @@ __abbrev_alias::magic_abbrev_expand() {
     if [[ "$is_eval" == "1" ]]; then
       newbuffer=$(eval "echo \"$newbuffer\"")
     fi
+    local cursor_in_buffer=${#newbuffer}
+    if [[ "$newbuffer" == *%%* ]]; then
+      newbuffer=${newbuffer//%%/%}
+    elif [[ "$newbuffer" == *%* ]]; then
+      local before=${newbuffer%%%*}
+      cursor_in_buffer=${#before}
+      newbuffer=${newbuffer/\%/}
+    fi
     READLINE_LINE="$left$newbuffer$right"
-    READLINE_POINT=$(($READLINE_POINT + ${#newbuffer} - ${#command}))
+    READLINE_POINT=$((${#left} + cursor_in_buffer))
   fi
 }
 
