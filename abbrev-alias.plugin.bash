@@ -18,14 +18,15 @@ __abbrev_alias::magic_abbrev_expand() {
     if [[ "$is_eval" == "1" ]]; then
       newbuffer=$(eval "echo \"$newbuffer\"")
     fi
+    local _esc=$'\x01\x02'
+    newbuffer=${newbuffer//%%/$_esc}
     local cursor_in_buffer=${#newbuffer}
-    if [[ "$newbuffer" == *%%* ]]; then
-      newbuffer=${newbuffer//%%/%}
-    elif [[ "$newbuffer" == *%* ]]; then
+    if [[ "$newbuffer" == *%* ]]; then
       local before=${newbuffer%%%*}
       cursor_in_buffer=${#before}
       newbuffer=${newbuffer/\%/}
     fi
+    newbuffer=${newbuffer//$_esc/%}
     READLINE_LINE="$left$newbuffer$right"
     READLINE_POINT=$((${#left} + cursor_in_buffer))
   fi
