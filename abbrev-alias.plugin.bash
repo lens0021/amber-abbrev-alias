@@ -50,12 +50,17 @@ bind -x '"\C-x ": __abbrev_alias::insert_space'
 bind -x '" ": __abbrev_alias::magic_abbrev_expand_and_insert_space'
 
 # bind enter
-bind -x '"\C-\xFF": __abbrev_alias::magic_abbrev_expand'
-bind '"\C-\xFE": accept-line'
+# Private dispatch keys for the Enter macro. The "\e[__abbrev_*~" shape
+# is structurally invalid as a real CSI (underscores aren't legal in
+# parameter bytes per ECMA-48), so no terminal will ever emit it and no
+# keyboard input can reproduce it. Avoids any chance of collision with
+# user keystrokes or other plugins' bindings.
+bind -x '"\e[__abbrev_e~": __abbrev_alias::magic_abbrev_expand'
+bind '"\e[__abbrev_a~": accept-line'
 bind '"\C-x\C-m": accept-line'
 bind '"\C-x\C-j": accept-line'
-bind '"\C-m": "\C-\xFF\C-\xFE"'
-bind '"\C-j": "\C-\xFF\C-\xFE"'
+bind '"\C-m": "\e[__abbrev_e~\e[__abbrev_a~"'
+bind '"\C-j": "\e[__abbrev_e~\e[__abbrev_a~"'
 
 __abbrev_alias::show() {
   local kind_filter=$1
